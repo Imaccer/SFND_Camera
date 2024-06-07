@@ -6,8 +6,27 @@
 #include "dataStructures.h" // you do not need to look into this file
 #include "structIO.hpp" // you do not need to look into this file
 
+#include <algorithm>
+
 using namespace std;
 
+double computeMedian(std::vector<double>& nums) {
+    // Sort the vector
+    std::sort(nums.begin(), nums.end());
+
+    // Find the median
+    size_t size = nums.size();
+    if (size == 0) {
+        // Handle case where the vector is empty
+        throw std::domain_error("Median is undefined for an empty vector.");
+    } else if (size % 2 == 0) {
+        // If even, average the two middle elements
+        return (nums[size / 2 - 1] + nums[size / 2]) / 2;
+    } else {
+        // If odd, return the middle element
+        return nums[size / 2];
+    }
+}
 // Purpose: Compute time-to-collision (TTC) based on keypoint correspondences in successive images
 // Notes: 
 // - please take a look at the main()-function first
@@ -56,9 +75,10 @@ void computeTTCCamera(std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPo
 
     // compute camera-based TTC from distance ratios
     double meanDistRatio = std::accumulate(distRatios.begin(), distRatios.end(), 0.0) / distRatios.size();
-
+    double medianDistRatio = computeMedian(distRatios);
     double dT = 1 / frameRate;
-    TTC = -dT / (1 - meanDistRatio);
+    // TTC = -dT / (1 - meanDistRatio);
+    TTC = -dT / (1 - medianDistRatio);
 
     // TODO: STUDENT TASK (replacement for meanDistRatio)
 }
